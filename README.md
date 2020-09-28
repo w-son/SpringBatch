@@ -70,3 +70,18 @@ Chunk 의 크기가 100 이고 Page 의 크기가 10 이면 하나의 Chunk 를 
 성능 최적화를 위해 가능하면 Chunk 와 Page 의 크기를 같게 해서 조회 하는 것이 바람직하다고 한다  
 
 
+## ItemReader, ItemProcessor, ItemWriter
+Tasklet 과 마찬가지로 Step 을 구성하는 요소들이다  
+하나의 Step 을 구성하는 Item 에서 `Reader` 와 `Writer` 는 필수이고 `Processor` 는 선택적으로 이용이 가능하다  
+이들 요소들이 작업 중 실패 하더라도 상태를 기억해서 실패 지점으로부터 재시도 가능하게끔 지원하는 인터페이스가 ItemStream 이다  
+사용자는 필요에 따라 Step 의 요소들이나 ItemStream 을 커스텀 할 수 있다    
+이제 각각의 요소들의 기능과 동작 원리에 대해서 살펴보자   
+
+
+### ItemReader
+데이터베이스, 파일시스템, JSON 등의 소스에서 데이터를 읽어들이는 역할을 한다  
+이 외의 데이터 소스를 Custom Reader 를 통해서 읽을 수 있다  
+ItemReader 인터페이스의 여러 구현체가 존재하지만 이 프로젝트에서는 JPA 를 사용하는 인터페이스 구현체를 사용해볼 예정이다  
+
+- [JpaBatchConfig](src/main/java/com/son/SpringBatch/config/JpaBatchConfig.java)
+ 
