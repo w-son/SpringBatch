@@ -63,6 +63,13 @@ public class JpaBatchConfig {
         Map<String, Object> parameterValues = new HashMap<>();
         parameterValues.put("firstName", "William");
 
+        /*
+         pageSize 를 초기화 시켜주지 않는다면
+         JpaPagingItemReader 의 기본 페이지 크기인 10 으로 동작하게 되고
+         chunk 단위로 영속성 컨텍스트를 초기화 시키는 JpaPagingItemReader 때문에 문제가 발생한다
+         예를 들어 chunk 의 크기가 100 이고 기본 pageSize 인 10 개로 데이터를 읽게되면
+         맨 마지막 페이지의 10개의 데이터만 트랜잭션에 남아 있을 것이다
+         */
         return new JpaPagingItemReaderBuilder<Person>()
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
