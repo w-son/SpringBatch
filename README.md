@@ -82,6 +82,7 @@ Tasklet 과 마찬가지로 Step 을 구성하는 요소들이다
 데이터베이스, 파일시스템, JSON 등의 소스에서 데이터를 읽어들이는 역할을 한다  
 이 외의 데이터 소스를 Custom Reader 를 통해서 읽을 수 있다  
 ItemReader 인터페이스의 여러 구현체가 존재하지만 이 프로젝트에서는 JPA 를 사용하는 인터페이스 구현체를 사용해볼 예정이다  
+JPA 사용시 Reader 의 여러가지 이용법, 주의할 점, 해결 방법을 소스와 주석을 보며 공부하자  
 
 - [JpaBatchConfig](src/main/java/com/son/SpringBatch/config/JpaBatchConfig.java)
  
