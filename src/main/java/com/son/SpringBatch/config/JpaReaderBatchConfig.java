@@ -11,20 +11,18 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class JpaBatchConfig {
+public class JpaReaderBatchConfig {
 
 
-    private static final Logger log = LoggerFactory.getLogger(JpaBatchConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(JpaReaderBatchConfig.class);
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -34,10 +32,10 @@ public class JpaBatchConfig {
 
 
     @Bean
-    public Job jpaBatchJob() {
+    public Job jpaReaderBatchJob() {
 
-        return jobBuilderFactory.get("jpaBatchJob")
-                .start(jpaBatchStep())
+        return jobBuilderFactory.get("jpaReaderBatchJob")
+                .start(jpaReaderBatchStep())
                 .build();
     }
 
@@ -53,19 +51,19 @@ public class JpaBatchConfig {
      3. Spring Data 를 이용한 RepositoryItemReader 이용
      */
     @Bean
-    public Step jpaBatchStep() {
+    public Step jpaReaderBatchStep() {
 
-        return stepBuilderFactory.get("jpaBatchStep")
+        return stepBuilderFactory.get("jpaReaderBatchStep")
                 .<Person, Person> chunk(chunkSize)
-                .reader(jpaPagingItemReader())
-                .writer(jpaPagingItemWriter())
+                .reader(jpaReaderPagingItemReader())
+                .writer(jpaReaderPagingItemWriter())
                 .build();
     }
 
 
     @Bean
     @StepScope
-    public JpaPagingItemReader<Person> jpaPagingItemReader() {
+    public JpaPagingItemReader<Person> jpaReaderPagingItemReader() {
 
         /*
          전체 데이터 개수 1000, Chunk 크기 100 인 상황을 가정했을 때 다음과 같은 문제가 발생할 수 있다
@@ -137,7 +135,7 @@ public class JpaBatchConfig {
     */
 
 
-    private ItemWriter<Person> jpaPagingItemWriter() {
+    private ItemWriter<Person> jpaReaderPagingItemWriter() {
 
         return people -> {
             for(Person person : people) {
