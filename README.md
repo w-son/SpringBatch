@@ -62,12 +62,19 @@ Job Parameters 는 Scope 의 value 값이 `job` 이거나 `step`
 
 
 ## Chunk 
-Chunk 는 Spring Batch 의 트랜잭션 기본 단위이다  
+> Chunk 는 Spring Batch 의 트랜잭션 기본 단위이다  
+
 예를 들어 Chunk 의 크기가 10 개의 row 라고 가정하면 10 개의 row 단위로 commit 및 rollback 이 실행된다는 의미이다  
 Chunk 내에서는 `ItemReader`, `IteamProcessor`, `ItemWriter` 가 데이터를 읽기, 처리하기, 쓰기 를 진행하는데  
 `ItemReader` 내에서는 읽어 들일 데이터를 Page 단위로 나눠 읽어 들일 수 있다  
 Chunk 의 크기가 100 이고 Page 의 크기가 10 이면 하나의 Chunk 를 처리하기 위해 10 번의 조회가 필요한 셈이다  
 성능 최적화를 위해 가능하면 Chunk 와 Page 의 크기를 같게 해서 조회 하는 것이 바람직하다고 한다  
+
+
+추가적으로 Spring Batch 에서는 Chunk 단위로 트랜잭션이 이루어지기 때문에   
+ItemProcessor 나 ItemWriter 에서 연관관계에 놓여 있는 프록시 객체들을 LAZY 로딩 가능하다  
+예를 들어 일대다 관계에 놓여 있는 클래스 A 와 B 사이에서  
+A 를 기준으로 LAZY 객체들인 B 들을 불러들일 수 있다는 의미이다    
 
 
 ## ItemReader, ItemProcessor, ItemWriter
@@ -95,6 +102,19 @@ Writer 가 처리된 10개를 한꺼번에 받아서 처리할 수 있다는 의
 
 JPA 기반 Writer 는 Entity 클래스를 제네릭 타입으로 받아야 하기 때문에 리턴 타입을 결정해 주기 위해서 Processor 를 사용해야하고   
 목적에 따라서 Writer 를 커스터마이징하여 시스템 출력을 이용하거나 외부 API 호출에 이용할 수 있다  
-관련 소스를와 주석을 보며 공부 해보자  
+관련 소스를 코드와 주석을 보며 공부 해보자  
 
 - [JpaWriterBatchConfig](src/main/java/com/son/SpringBatch/config/JpaWriterBatchConfig.java)
+
+
+### ItemProcessor
+ItemProcessor 는 사실 선택적으로 Step 에 포함 될 수도 있고 그렇지 않을 수도 있다  
+Reader 에서 읽어들인 데이터를 `가공`하거나 `필터`하여 Writer 에게 전달하는 역할을 맡는다  
+다시 말해, 데이터를 읽고 쓰는 과정에서 필요한 비즈니스 로직을 분리해 내 처리하는 부분이 바로 ItemProcessor 라고 볼 수 있다   
+
+
+ItemProcessor 의 구현체중 가장 많이 사용되는 CompositeItemProcessor 은  
+여러가지 로직을 각각의 ItemProcessor 에 분리한 후 이를 병합하는데 이용된다  
+관련 소스를 코드와 주석을 보며 공부 해보자  
+
+- [JpaProcessorBatchConfig](src/main/java/com/son/SpringBatch/config/JpaProcessorBatchConfig.java)
