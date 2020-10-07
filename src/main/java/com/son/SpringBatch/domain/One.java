@@ -24,7 +24,7 @@ public class One {
     private int number;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "one", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "one")
     private List<Many> manyList = new ArrayList<>();
 
 
@@ -35,7 +35,6 @@ public class One {
 
     public void addMany(Many many) {
         this.manyList.add(many);
-        many.updateOne(this);
     }
 
 

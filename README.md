@@ -138,3 +138,17 @@ JPA 를 구현체로 삼는 Job 들은 트랜잭션이 Reader 으로 한정되�
 문제가 되지 않는 상황인 하나의 자식 엔티티만 join fetch 로 조회하는 Job 을 구성한 코드는 다음을 참고하면 된다        
 
 - [JpaSampleBatchConfig](src/main/java/com/son/SpringBatch/config/JpaSampleBatchConfig.java)
+
+## Spring Batch Tests
+서비스를 제공하는데 있어 중요한 파트라 볼 수 있는 테스트이다  
+Spring Batch 역시 JUnit & Mock 을 통해 테스트 환경을 구축할 수 있다  
+통합 테스트, 단위 테스트 별로 예제를 참고하며 공부해보자  
+
+### 통합 테스트 
+
+각 소스의 Annotation 은 무엇을 의미하는지  
+Spring Batch 의 Transaction 과 SpringBoot MVC 의 Transaction 이 어떻게 다른지  
+그리고 내친김에 EntityManager 와 Persistent Context 까지 중점적으로 살펴보며 공부하면 좋을 것 같다  
+
+- [JobLauncherTestUtils 설정](src/test/java/com/son/SpringBatch/BatchJobConfig.java)
+- [Spring Batch Test](src/test/java/com/son/SpringBatch/BatchJobConfig.java)

@@ -20,6 +20,10 @@ public class Many {
 
     private int number;
 
+    /*
+     Spring Batch 는 Transaction 의 단위가 Chunk 이기 때문에
+     Test 에서 @Transactional 사용이 제한적이므로 CascadeType.All 을 제거했다
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "one_id")
     private One one;
@@ -32,6 +36,7 @@ public class Many {
 
     public void updateOne(One one) {
         this.one = one;
+        one.addMany(this);
     }
 
 
