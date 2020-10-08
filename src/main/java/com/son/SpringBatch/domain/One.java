@@ -24,7 +24,7 @@ public class One {
     private int number;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "one")
+    @OneToMany(mappedBy = "one", cascade = CascadeType.ALL)
     private List<Many> manyList = new ArrayList<>();
 
 

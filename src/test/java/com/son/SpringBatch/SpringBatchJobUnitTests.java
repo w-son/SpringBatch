@@ -8,11 +8,13 @@ import com.son.SpringBatch.repository.OneRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.test.JobLauncherTestUtils;
+import org.springframework.batch.test.MetaDataInstanceFactory;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.type.LocalDateType.FORMATTER;
@@ -29,7 +30,7 @@ import static org.hibernate.type.LocalDateType.FORMATTER;
 @SpringBootTest(classes = {JpaSampleBatchConfig.class, BatchJobConfig.class})
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
-public class SpringBatchJobTests {
+public class SpringBatchJobUnitTests {
 
 
     @Autowired
@@ -41,6 +42,9 @@ public class SpringBatchJobTests {
     @Autowired
     private ManyRepository manyRepository;
 
+    @Autowired
+    private JpaPagingItemReader<One> reader;
+
 
     @Before
     public void tearDown() {
@@ -49,8 +53,29 @@ public class SpringBatchJobTests {
     }
 
 
+    /*
+     원래 @TestExecutionListeners 에
+     DependencyInjectionTestExecutionListener.class, StepScopeTestExecutionListener.class 을 등록함으로써
+     Spring Batch 의 테스트 환경을 구축하기 위한 설정이 필요하고
+     이 중 StepScopeTestExecutionListener.class 이 필요로 하는 팩토리 메서드가 getStepExecution 메서드이다
+
+     @SpringBatchTest Annotation 을 활용한다면 이런 부분들을 자동으로 설정해주며
+     팩토리 메소드인 getStepExecution 을 구현해 놓기만 하면 정상적으로 동작한다
+     메서드명은 조건과 무방하고 StepExecution 을 리턴하는 메서드만 정의해 놓으면 된다
+     */
+    public StepExecution getStepExecution() {
+
+        LocalDateTime now = LocalDateTime.now();
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("orderDate", now.format(FORMATTER))
+                .toJobParameters();
+
+        return MetaDataInstanceFactory.createStepExecution(jobParameters);
+    }
+
+
     @Test
-    public void 통합테스트() throws Exception {
+    public void 단위테스트() throws Exception {
 
         One one = new One("one", 10);
 
@@ -65,19 +90,10 @@ public class SpringBatchJobTests {
         manyRepository.save(many1);
         manyRepository.save(many2);
 
-        LocalDateTime now = LocalDateTime.now();
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("requestDate", now.format(FORMATTER))
-                .toJobParameters();
+        reader.open(new ExecutionContext());
 
-        JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
-        assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
-
-        List<One> all = oneRepository.findAll();
-        assertThat(all.size()).isEqualTo(1);
-
-        List<Many> manyList = all.get(0).getManyList();
-        assertThat(manyList.size()).isEqualTo(2);
+        assertThat(reader.read().getNumber()).isEqualTo(10);
+        assertThat(reader.read()).isNull();
     }
 
 

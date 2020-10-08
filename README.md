@@ -8,7 +8,7 @@
 `STEP`은 `TASKLET` 혹은 `READER & PROCESSOR & WRITER`로 이루어져있다  
 
 
-## Meta Data
+## &#127759; Meta Data
 application.properties 파일의 설정에  
 `spring.batch.initialize-schema=always`를 추가하면   
 어플리케이션 구동 시 Spring Batch 와 관련된 테이블이 자동으로 생성된다   
@@ -32,7 +32,7 @@ application.properties 파일의 설정에
   - 어플리케이션 실행 시 Program argument 로 넘긴 인자에 대한 정보가 저장된다
   
 
-## Steps on conditional circumstances
+## &#127759; Steps on conditions
 Job 내의 각각의 Step 이 실패할 상황을 고려해 분기 처리를 이용한다  
 if, else if, else 와 유사하게 메서드를 사용하여 step 간의 분기 처리가 가능하다  
 예제 소스를 보며 각각의 Step 이 분기되어 처리될 수 있는지 확인해보자  
@@ -40,7 +40,7 @@ if, else if, else 와 유사하게 메서드를 사용하여 step 간의 분기 
 - [ConditionalBatchConfig](src/main/java/com/son/SpringBatch/config/ConditionalBatchConfig.java)  
 
 
-## Job Scope, Step Scope, Parameters
+## &#127759; Job Scope, Step Scope, Parameters
 Spring Batch 는 MVC 와 비슷하게 Job 과 Step 에 Scope 를 부여한다  
 Spring Singleton Scope 와 마찬가지로 Job 혹은 Step 이 Bean 으로 등록되어 호출 시에 생성 및 반환 작업이 이루어진다  
 Job Parameters 역시 이런 Scope 들이 생성될 때 사용될 수 있고 이는 Job 과 Step 들을 상황별로 구분하여 호출하기에 용이하다  
@@ -61,7 +61,7 @@ Job Parameters 는 Scope 의 value 값이 `job` 이거나 `step`
 - [ParameterBatchConfig](src/main/java/com/son/SpringBatch/config/ParameterBatchConfig.java)
 
 
-## Chunk 
+## &#127759; Chunk 
 > Chunk 는 Spring Batch 의 트랜잭션 기본 단위이다  
 
 예를 들어 Chunk 의 크기가 10 개의 row 라고 가정하면 10 개의 row 단위로 commit 및 rollback 이 실행된다는 의미이다  
@@ -77,7 +77,7 @@ ItemProcessor 나 ItemWriter 에서 연관관계에 놓여 있는 프록시 객�
 A 를 기준으로 LAZY 객체들인 B 들을 불러들일 수 있다는 의미이다    
 
 
-## ItemReader, ItemProcessor, ItemWriter
+## &#127759; ItemReader, ItemProcessor, ItemWriter
 Tasklet 과 마찬가지로 Step 을 구성하는 요소들이다  
 하나의 Step 을 구성하는 Item 에서 `Reader` 와 `Writer` 는 필수이고 `Processor` 는 선택적으로 이용이 가능하다  
 이들 요소들이 작업 중 실패 하더라도 상태를 기억해서 실패 지점으로부터 재시도 가능하게끔 지원하는 인터페이스가 ItemStream 이다  
@@ -120,7 +120,7 @@ ItemProcessor 의 구현체중 가장 많이 사용되는 CompositeItemProcessor
 - [JpaProcessorBatchConfig](src/main/java/com/son/SpringBatch/config/JpaProcessorBatchConfig.java)
 
 
-## JPA Batch 에서의 Relational Mapping
+## &#127759; JPA Batch 에서의 Relational Mapping
 JPA Batch 사용 시 여러 연관관계의 놓인 엔티티를 Reader 를 통해 읽어들이는 경우   
 즉 One to Many 관계에 놓인 엔티티에서 One 을 기준으로 `1개의 연관된 Many 만` join fetch 로 가져올 수 있다는 제약이 있다  
 이런 상황에서 LAZY 관계에 놓인 엔티티들을 그냥 get 메서드로 가져오게 된다면 `N + 1` 문제가 발생한다  
@@ -139,7 +139,7 @@ JPA 를 구현체로 삼는 Job 들은 트랜잭션이 Reader 으로 한정되�
 
 - [JpaSampleBatchConfig](src/main/java/com/son/SpringBatch/config/JpaSampleBatchConfig.java)
 
-## Spring Batch Tests
+## &#127759; Spring Batch Tests
 서비스를 제공하는데 있어 중요한 파트라 볼 수 있는 테스트이다  
 Spring Batch 역시 JUnit & Mock 을 통해 테스트 환경을 구축할 수 있다  
 통합 테스트, 단위 테스트 별로 예제를 참고하며 공부해보자  
@@ -151,4 +151,16 @@ Spring Batch 의 Transaction 과 SpringBoot MVC 의 Transaction 이 어떻게 �
 그리고 내친김에 EntityManager 와 Persistent Context 까지 중점적으로 살펴보며 공부하면 좋을 것 같다  
 
 - [JobLauncherTestUtils 설정](src/test/java/com/son/SpringBatch/BatchJobConfig.java)
-- [Spring Batch Test](src/test/java/com/son/SpringBatch/BatchJobConfig.java)
+- [Spring Batch Test](src/test/java/com/son/SpringBatch/SpringBatchJobTests.java)
+
+
+### 단위 테스트
+
+사실상 @SpringBootTest 와 @SpringBatchTest Annotation 으로 Spring Batch 의 통합 및 단위 테스트의 여러 설정들을 퉁(?) 칠 수 있다  
+- 테스트 환경 조성을 위한 빈 초기화 및 DI 설정, Datasource 주입 등  
+- JobLauncherTestUtils 빈 의 주입 *  
+- StepExecution 수행을 위한 Listener 클래스 등록 *  
+
+세부 사항들은 테스트 코드 소스를 참고하며 공부하자  
+
+- [Spring Batch Unit Test](src/test/java/com/son/SpringBatch/SpringBatchJobUnitTests.java)
